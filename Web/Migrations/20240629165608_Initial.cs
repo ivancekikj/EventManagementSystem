@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Web.Migrations
 {
     /// <inheritdoc />
-    public partial class authorization : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,6 +30,8 @@ namespace Web.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -171,6 +173,42 @@ namespace Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DateTimeOrdered = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Orders_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShoppingCarts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShoppingCarts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ShoppingCarts_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Schedules",
                 columns: table => new
                 {
@@ -186,8 +224,7 @@ namespace Web.Migrations
                         name: "FK_Schedules_Events_EventId",
                         column: x => x.EventId,
                         principalTable: "Events",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -198,18 +235,47 @@ namespace Web.Migrations
                     Price = table.Column<int>(type: "int", nullable: false),
                     Discount = table.Column<float>(type: "real", nullable: false),
                     ScheduleId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Discriminator = table.Column<string>(type: "nvarchar(21)", maxLength: 21, nullable: false)
+                    Discriminator = table.Column<string>(type: "nvarchar(21)", maxLength: 21, nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: true),
+                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Ticket", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Ticket_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Ticket_Schedules_ScheduleId",
                         column: x => x.ScheduleId,
                         principalTable: "Schedules",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                        
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TicketInCarts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    TicketForPurchaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ShoppingCartId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TicketInCarts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TicketInCarts_ShoppingCarts_ShoppingCartId",
+                        column: x => x.ShoppingCartId,
+                        principalTable: "ShoppingCarts",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TicketInCarts_Ticket_TicketForPurchaseId",
+                        column: x => x.TicketForPurchaseId,
+                        principalTable: "Ticket",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -252,14 +318,41 @@ namespace Web.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Orders_ApplicationUserId",
+                table: "Orders",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Schedules_EventId",
                 table: "Schedules",
                 column: "EventId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ShoppingCarts_ApplicationUserId",
+                table: "ShoppingCarts",
+                column: "ApplicationUserId",
+                unique: true,
+                filter: "[ApplicationUserId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ticket_OrderId",
+                table: "Ticket",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Ticket_ScheduleId",
                 table: "Ticket",
                 column: "ScheduleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketInCarts_ShoppingCartId",
+                table: "TicketInCarts",
+                column: "ShoppingCartId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketInCarts_TicketForPurchaseId",
+                table: "TicketInCarts",
+                column: "TicketForPurchaseId");
         }
 
         /// <inheritdoc />
@@ -281,16 +374,25 @@ namespace Web.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Ticket");
+                name: "TicketInCarts");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "ShoppingCarts");
+
+            migrationBuilder.DropTable(
+                name: "Ticket");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "Schedules");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Events");

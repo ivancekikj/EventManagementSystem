@@ -74,71 +74,6 @@ namespace Web.Migrations
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -224,6 +159,77 @@ namespace Web.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Web.Models.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
             modelBuilder.Entity("Web.Models.Event", b =>
                 {
                     b.Property<Guid>("Id")
@@ -245,6 +251,29 @@ namespace Web.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Events");
+                });
+
+            modelBuilder.Entity("Web.Models.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("DateTimeOrdered")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("Web.Models.Schedule", b =>
@@ -269,6 +298,24 @@ namespace Web.Migrations
                     b.HasIndex("EventId");
 
                     b.ToTable("Schedules");
+                });
+
+            modelBuilder.Entity("Web.Models.ShoppingCart", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId")
+                        .IsUnique()
+                        .HasFilter("[ApplicationUserId] IS NOT NULL");
+
+                    b.ToTable("ShoppingCarts");
                 });
 
             modelBuilder.Entity("Web.Models.Ticket", b =>
@@ -304,9 +351,43 @@ namespace Web.Migrations
                     b.UseTphMappingStrategy();
                 });
 
+            modelBuilder.Entity("Web.Models.TicketInCart", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("Quantity")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("ShoppingCartId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TicketForPurchaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShoppingCartId");
+
+                    b.HasIndex("TicketForPurchaseId");
+
+                    b.ToTable("TicketInCarts");
+                });
+
             modelBuilder.Entity("Web.Models.PurchasedTicket", b =>
                 {
                     b.HasBaseType("Web.Models.Ticket");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("Quantity")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.HasIndex("OrderId");
 
                     b.HasDiscriminator().HasValue("PurchasedTicket");
                 });
@@ -329,7 +410,7 @@ namespace Web.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Web.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -338,7 +419,7 @@ namespace Web.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Web.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -353,7 +434,7 @@ namespace Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Web.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -362,11 +443,20 @@ namespace Web.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Web.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Web.Models.Order", b =>
+                {
+                    b.HasOne("Web.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("Orders")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("Web.Models.Schedule", b =>
@@ -378,6 +468,15 @@ namespace Web.Migrations
                     b.Navigation("Event");
                 });
 
+            modelBuilder.Entity("Web.Models.ShoppingCart", b =>
+                {
+                    b.HasOne("Web.Models.ApplicationUser", "ApplicationUser")
+                        .WithOne("ShoppingCart")
+                        .HasForeignKey("Web.Models.ShoppingCart", "ApplicationUserId");
+
+                    b.Navigation("ApplicationUser");
+                });
+
             modelBuilder.Entity("Web.Models.Ticket", b =>
                 {
                     b.HasOne("Web.Models.Schedule", "Schedule")
@@ -387,14 +486,60 @@ namespace Web.Migrations
                     b.Navigation("Schedule");
                 });
 
+            modelBuilder.Entity("Web.Models.TicketInCart", b =>
+                {
+                    b.HasOne("Web.Models.ShoppingCart", "ShoppingCart")
+                        .WithMany("TicketInCarts")
+                        .HasForeignKey("ShoppingCartId");
+
+                    b.HasOne("Web.Models.TicketForPurchase", "TicketForPurchase")
+                        .WithMany("TicketInCarts")
+                        .HasForeignKey("TicketForPurchaseId");
+
+                    b.Navigation("ShoppingCart");
+
+                    b.Navigation("TicketForPurchase");
+                });
+
+            modelBuilder.Entity("Web.Models.PurchasedTicket", b =>
+                {
+                    b.HasOne("Web.Models.Order", "Order")
+                        .WithMany("PurchasedTickets")
+                        .HasForeignKey("OrderId");
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("Web.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Orders");
+
+                    b.Navigation("ShoppingCart");
+                });
+
             modelBuilder.Entity("Web.Models.Event", b =>
                 {
                     b.Navigation("Schedules");
                 });
 
+            modelBuilder.Entity("Web.Models.Order", b =>
+                {
+                    b.Navigation("PurchasedTickets");
+                });
+
             modelBuilder.Entity("Web.Models.Schedule", b =>
                 {
                     b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("Web.Models.ShoppingCart", b =>
+                {
+                    b.Navigation("TicketInCarts");
+                });
+
+            modelBuilder.Entity("Web.Models.TicketForPurchase", b =>
+                {
+                    b.Navigation("TicketInCarts");
                 });
 #pragma warning restore 612, 618
         }

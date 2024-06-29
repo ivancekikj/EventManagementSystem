@@ -2,10 +2,8 @@
 
 namespace Web.Models
 {
-    public class Event
+    public class Event : BaseEntity
     {
-        [Required]
-        public Guid Id { get; set; }
         [Required]
         public string? Name { get; set; }
         [Required]
