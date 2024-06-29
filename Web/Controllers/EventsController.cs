@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +43,7 @@ namespace Web.Controllers
 
             return View(@event);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: Events/Create
         public IActionResult Create()
         {
@@ -52,6 +53,7 @@ namespace Web.Controllers
         // POST: Events/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,Location")] Event @event)
@@ -66,6 +68,7 @@ namespace Web.Controllers
             return View(@event);
         }
 
+        [Authorize(Roles = "Admin")]
         // GET: Events/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
@@ -85,6 +88,7 @@ namespace Web.Controllers
         // POST: Events/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Description,Location")] Event @event)
@@ -118,6 +122,7 @@ namespace Web.Controllers
         }
 
         // GET: Events/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -136,6 +141,7 @@ namespace Web.Controllers
         }
 
         // POST: Events/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
