@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -46,6 +47,7 @@ namespace Web.Controllers
         }
 
         // GET: TicketForPurchases/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["ScheduleId"] = new SelectList(_context.Schedules, "Id", "Id");
@@ -55,6 +57,7 @@ namespace Web.Controllers
         // POST: TicketForPurchases/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Price,Discount,ScheduleId")] TicketForPurchase ticketForPurchase)
@@ -71,6 +74,7 @@ namespace Web.Controllers
         }
 
         // GET: TicketForPurchases/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -90,6 +94,7 @@ namespace Web.Controllers
         // POST: TicketForPurchases/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Id,Price,Discount,ScheduleId")] TicketForPurchase ticketForPurchase)
@@ -124,6 +129,7 @@ namespace Web.Controllers
         }
 
         // GET: TicketForPurchases/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -143,6 +149,7 @@ namespace Web.Controllers
         }
 
         // POST: TicketForPurchases/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)

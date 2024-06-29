@@ -9,18 +9,18 @@ using Web.Data;
 
 #nullable disable
 
-namespace Web.Data.Migrations
+namespace Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240627142831_Initial")]
-    partial class Initial
+    [Migration("20240629152923_authorization")]
+    partial class authorization
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.1")
+                .HasAnnotation("ProductVersion", "8.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -250,25 +250,6 @@ namespace Web.Data.Migrations
                     b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("Web.Models.PurchasedTicket", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<float?>("Discount")
-                        .IsRequired()
-                        .HasColumnType("real");
-
-                    b.Property<int?>("Price")
-                        .IsRequired()
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Purchasedtickets");
-                });
-
             modelBuilder.Entity("Web.Models.Schedule", b =>
                 {
                     b.Property<Guid>("Id")
@@ -279,16 +260,21 @@ namespace Web.Data.Migrations
                         .IsRequired()
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("StartTime")
                         .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EventId");
+
                     b.ToTable("Schedules");
                 });
 
-            modelBuilder.Entity("Web.Models.TicketForPurchase", b =>
+            modelBuilder.Entity("Web.Models.Ticket", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -298,13 +284,41 @@ namespace Web.Data.Migrations
                         .IsRequired()
                         .HasColumnType("real");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("nvarchar(21)");
+
                     b.Property<int?>("Price")
                         .IsRequired()
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("ScheduleId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
-                    b.ToTable("TicketForPurchases");
+                    b.HasIndex("ScheduleId");
+
+                    b.ToTable("Ticket");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Ticket");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("Web.Models.PurchasedTicket", b =>
+                {
+                    b.HasBaseType("Web.Models.Ticket");
+
+                    b.HasDiscriminator().HasValue("PurchasedTicket");
+                });
+
+            modelBuilder.Entity("Web.Models.TicketForPurchase", b =>
+                {
+                    b.HasBaseType("Web.Models.Ticket");
+
+                    b.HasDiscriminator().HasValue("TicketForPurchase");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -356,6 +370,34 @@ namespace Web.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Web.Models.Schedule", b =>
+                {
+                    b.HasOne("Web.Models.Event", "Event")
+                        .WithMany("Schedules")
+                        .HasForeignKey("EventId");
+
+                    b.Navigation("Event");
+                });
+
+            modelBuilder.Entity("Web.Models.Ticket", b =>
+                {
+                    b.HasOne("Web.Models.Schedule", "Schedule")
+                        .WithMany("Tickets")
+                        .HasForeignKey("ScheduleId");
+
+                    b.Navigation("Schedule");
+                });
+
+            modelBuilder.Entity("Web.Models.Event", b =>
+                {
+                    b.Navigation("Schedules");
+                });
+
+            modelBuilder.Entity("Web.Models.Schedule", b =>
+                {
+                    b.Navigation("Tickets");
                 });
 #pragma warning restore 612, 618
         }
