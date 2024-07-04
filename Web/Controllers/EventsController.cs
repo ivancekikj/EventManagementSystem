@@ -6,36 +6,36 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Web.Data;
-using Web.Models;
+using Service.Interface;
+using Domain.Models;
 
 namespace Web.Controllers
 {
     public class EventsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IEventService _eventService;
 
-        public EventsController(ApplicationDbContext context)
+        public EventsController(IEventService eventService)
         {
-            _context = context;
+            _eventService = eventService;
         }
 
+
         // GET: Events
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Events.ToListAsync());
+            return View(_eventService.GetAll());
         }
 
         // GET: Events/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        public IActionResult Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var @event = await _context.Events
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var @event = _eventService.GetById(id);
             if (@event == null)
             {
                 return NotFound();
@@ -56,13 +56,11 @@ namespace Web.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Location")] Event @event)
+        public IActionResult Create([Bind("Id,Name,Description,Location")] Event @event)
         {
             if (ModelState.IsValid)
             {
-                @event.Id = Guid.NewGuid();
-                _context.Add(@event);
-                await _context.SaveChangesAsync();
+                _eventService.Create(@event);
                 return RedirectToAction(nameof(Index));
             }
             return View(@event);
@@ -70,14 +68,14 @@ namespace Web.Controllers
 
         [Authorize(Roles = "Admin")]
         // GET: Events/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public IActionResult Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var @event = await _context.Events.FindAsync(id);
+            var @event = _eventService.GetById(id);
             if (@event == null)
             {
                 return NotFound();
@@ -91,7 +89,7 @@ namespace Web.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Description,Location")] Event @event)
+        public IActionResult Edit(Guid id, [Bind("Id,Name,Description,Location")] Event @event)
         {
             if (id != @event.Id)
             {
@@ -102,8 +100,7 @@ namespace Web.Controllers
             {
                 try
                 {
-                    _context.Update(@event);
-                    await _context.SaveChangesAsync();
+                    _eventService.Update(@event);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -123,15 +120,14 @@ namespace Web.Controllers
 
         // GET: Events/Delete/5
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(Guid? id)
+        public IActionResult Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var @event = await _context.Events
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var @event = _eventService.GetById(id);
             if (@event == null)
             {
                 return NotFound();
@@ -144,21 +140,15 @@ namespace Web.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        public IActionResult DeleteConfirmed(Guid id)
         {
-            var @event = await _context.Events.FindAsync(id);
-            if (@event != null)
-            {
-                _context.Events.Remove(@event);
-            }
-
-            await _context.SaveChangesAsync();
+            _eventService.DeleteById(id);
             return RedirectToAction(nameof(Index));
         }
 
         private bool EventExists(Guid id)
         {
-            return _context.Events.Any(e => e.Id == id);
+            return _eventService.GetById(id) != null;
         }
     }
 }

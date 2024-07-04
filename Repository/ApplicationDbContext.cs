@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Domain.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Web.Models;
+using System.Collections.Generic;
 
-namespace Web.Data
+namespace Repository
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
@@ -11,7 +12,7 @@ namespace Web.Data
         {
         }
 
-        public DbSet<Event> Events { get; set;  }
+        public DbSet<Event> Events { get; set; }
         public DbSet<Schedule> Schedules { get; set; }
         public DbSet<TicketForPurchase> TicketForPurchases { get; set; }
         public DbSet<PurchasedTicket> Purchasedtickets { get; set; }

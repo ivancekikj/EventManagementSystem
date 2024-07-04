@@ -1,7 +1,11 @@
+using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Web.Data;
-using Web.Models;
+using Repository;
+using Repository.Implementation;
+using Repository.Interface;
+using Service.Implementation;
+using Service.Interface;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +20,15 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddTransient<IEventRepository, EventRepository>();
+builder.Services.AddTransient<IScheduleRepository, ScheduleRepository>();
+builder.Services.AddTransient<ITicketForPurchaseRepository, TicketForPurchaseRepository>();
+
+builder.Services.AddTransient<IEventService, EventService>();
+builder.Services.AddTransient<IScheduleService, ScheduleService>();
+builder.Services.AddTransient<ITicketForPurchaseService, TicketForPurchaseService>();
 
 var app = builder.Build();
 

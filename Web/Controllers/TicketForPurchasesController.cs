@@ -2,42 +2,43 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Web.Data;
-using Web.Models;
+using Service.Implementation;
+using Service.Interface;
+
 
 namespace Web.Controllers
 {
     public class TicketForPurchasesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ITicketForPurchaseService _ticketPurchaseService;
+        private readonly IScheduleService _scheduleService;
 
-        public TicketForPurchasesController(ApplicationDbContext context)
+        public TicketForPurchasesController(ITicketForPurchaseService ticketPurchaseService, IScheduleService scheduleService)
         {
-            _context = context;
+            _ticketPurchaseService = ticketPurchaseService;
+            _scheduleService = scheduleService;
         }
 
         // GET: TicketForPurchases
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var applicationDbContext = _context.TicketForPurchases.Include(t => t.Schedule);
-            return View(await applicationDbContext.ToListAsync());
+            return View(_ticketPurchaseService.GetAll());
         }
 
         // GET: TicketForPurchases/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        public IActionResult Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var ticketForPurchase = await _context.TicketForPurchases
-                .Include(t => t.Schedule)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var ticketForPurchase = _ticketPurchaseService.GetById(id);
             if (ticketForPurchase == null)
             {
                 return NotFound();
@@ -50,7 +51,7 @@ namespace Web.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
-            ViewData["ScheduleId"] = new SelectList(_context.Schedules, "Id", "Id");
+            ViewData["ScheduleId"] = new SelectList(_scheduleService.GetAll(), "Id", "Id");
             return View();
         }
 
@@ -60,34 +61,32 @@ namespace Web.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Price,Discount,ScheduleId")] TicketForPurchase ticketForPurchase)
+        public IActionResult Create([Bind("Id,Price,Discount,ScheduleId")] TicketForPurchase ticketForPurchase)
         {
             if (ModelState.IsValid)
             {
-                ticketForPurchase.Id = Guid.NewGuid();
-                _context.Add(ticketForPurchase);
-                await _context.SaveChangesAsync();
+                _ticketPurchaseService.Create(ticketForPurchase);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ScheduleId"] = new SelectList(_context.Schedules, "Id", "Id", ticketForPurchase.ScheduleId);
+            ViewData["ScheduleId"] = new SelectList(_scheduleService.GetAll(), "Id", "Id", ticketForPurchase.ScheduleId);
             return View(ticketForPurchase);
         }
 
         // GET: TicketForPurchases/Edit/5
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(Guid? id)
+        public IActionResult Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var ticketForPurchase = await _context.TicketForPurchases.FindAsync(id);
+            var ticketForPurchase = _ticketPurchaseService.GetById(id);
             if (ticketForPurchase == null)
             {
                 return NotFound();
             }
-            ViewData["ScheduleId"] = new SelectList(_context.Schedules, "Id", "Id", ticketForPurchase.ScheduleId);
+            ViewData["ScheduleId"] = new SelectList(_scheduleService.GetAll(), "Id", "Id", ticketForPurchase.ScheduleId);
             return View(ticketForPurchase);
         }
 
@@ -97,7 +96,7 @@ namespace Web.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Price,Discount,ScheduleId")] TicketForPurchase ticketForPurchase)
+        public IActionResult Edit(Guid id, [Bind("Id,Price,Discount,ScheduleId")] TicketForPurchase ticketForPurchase)
         {
             if (id != ticketForPurchase.Id)
             {
@@ -108,8 +107,7 @@ namespace Web.Controllers
             {
                 try
                 {
-                    _context.Update(ticketForPurchase);
-                    await _context.SaveChangesAsync();
+                    _ticketPurchaseService.Update(ticketForPurchase);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -124,22 +122,20 @@ namespace Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ScheduleId"] = new SelectList(_context.Schedules, "Id", "Id", ticketForPurchase.ScheduleId);
+            ViewData["ScheduleId"] = new SelectList(_scheduleService.GetAll(), "Id", "Id", ticketForPurchase.ScheduleId);
             return View(ticketForPurchase);
         }
 
         // GET: TicketForPurchases/Delete/5
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(Guid? id)
+        public IActionResult Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var ticketForPurchase = await _context.TicketForPurchases
-                .Include(t => t.Schedule)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var ticketForPurchase = _ticketPurchaseService.GetById(id);
             if (ticketForPurchase == null)
             {
                 return NotFound();
@@ -152,21 +148,15 @@ namespace Web.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        public IActionResult DeleteConfirmed(Guid id)
         {
-            var ticketForPurchase = await _context.TicketForPurchases.FindAsync(id);
-            if (ticketForPurchase != null)
-            {
-                _context.TicketForPurchases.Remove(ticketForPurchase);
-            }
-
-            await _context.SaveChangesAsync();
+            _ticketPurchaseService.DeleteById(id);
             return RedirectToAction(nameof(Index));
         }
 
         private bool TicketForPurchaseExists(Guid id)
         {
-            return _context.TicketForPurchases.Any(e => e.Id == id);
+            return _ticketPurchaseService.GetById(id) != null;
         }
     }
 }

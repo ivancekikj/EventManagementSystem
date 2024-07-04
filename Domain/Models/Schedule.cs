@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Web.Models
+namespace Domain.Models
 {
-    public class Schedule
+    public class Schedule : BaseEntity
     {
-        [Required]
-        public Guid Id { get; set; }
         [Required]
         public DateTime? StartTime { get; set; }
         [Required]
