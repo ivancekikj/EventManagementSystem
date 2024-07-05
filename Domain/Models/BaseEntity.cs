@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Models
 {
     public class BaseEntity
     {
-        [Required]
+        [Key]
         public Guid Id { get; set; }
     }
 }

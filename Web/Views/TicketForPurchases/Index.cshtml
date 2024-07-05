@@ -51,6 +51,11 @@
                         <span> | </span>
                         <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                     }
+                    @if (User.IsInRole("User"))
+                    {
+                        <span> | </span>
+                        <a asp-action="AddToCart" asp-route-id="@item.Id" class="btn btn-info">Add to Cart</a>
+                    }
             </td>
         </tr>
 }

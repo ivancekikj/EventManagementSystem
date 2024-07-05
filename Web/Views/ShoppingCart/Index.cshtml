@@ -1,0 +1,77 @@
+﻿@using Domain.Models
+﻿@using Microsoft.Extensions.Options
+@model Domain.Dto.ShoppingCartDto
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+@if(Model.Products.Count > 0)
+{
+    <form asp-action="Order" method="post">
+        <button class="btn btn-success">Order</button>
+    </form>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Event
+            </th>
+            <th>
+                Schedule
+            </th>
+            <th>
+                Price
+            </th>
+            <th>
+                Quantity
+            </th>
+            <th>
+                Discount
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var ticket in Model.Products)
+        {
+            <tr>
+                <td>
+                    @ticket.TicketForPurchase.Schedule.Event.Name
+                </td>
+                <td>
+                    @ticket.TicketForPurchase.Schedule.StartTime - @ticket.TicketForPurchase.Schedule.EndTime
+                </td>
+                <td>
+                    @ticket.TicketForPurchase.Price
+                </td>
+                <td>
+                    @ticket.Quantity
+                </td>
+                <td>
+                    @ticket.TicketForPurchase.Discount
+                </td>
+                <td>
+                    <form asp-action="DeleteFromShoppingCart" method="post">
+                        <input type="hidden" name="id" value="@ticket.TicketForPurchase.Id" />
+                        <button class="btn btn-success">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+    <th><b>Total:</b></th>
+
+    <th></th>
+    <th></th>
+    <th></th>
+
+    <th><b>@Model.TotalPrice</b></th>
+
+    </tfoot>
+</table>
