@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -17,11 +18,44 @@ namespace Web.Controllers
     {
         private readonly ITicketForPurchaseService _ticketPurchaseService;
         private readonly IScheduleService _scheduleService;
+        private readonly IShoppingCartService _shoppingCartService;
 
-        public TicketForPurchasesController(ITicketForPurchaseService ticketPurchaseService, IScheduleService scheduleService)
+        public TicketForPurchasesController(ITicketForPurchaseService ticketPurchaseService, 
+            IScheduleService scheduleService, 
+            IShoppingCartService shoppingCartService)
         {
             _ticketPurchaseService = ticketPurchaseService;
             _scheduleService = scheduleService;
+            _shoppingCartService = shoppingCartService;
+        }
+
+        [Authorize(Roles = "User")]
+        public IActionResult AddToCart(Guid? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var ticket = _ticketPurchaseService.GetById(id);
+
+            TicketInCart tic = new TicketInCart();
+
+            if (ticket != null)
+            {
+                tic.TicketForPurchaseId = ticket.Id;
+            }
+
+            return View(tic);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "User")]
+        public IActionResult AddToCartConfirmed(TicketInCart model)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            _shoppingCartService.AddToShoppingConfirmed(model, userId);
+            return RedirectToAction("Index");
         }
 
         // GET: TicketForPurchases

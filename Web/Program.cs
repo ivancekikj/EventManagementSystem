@@ -25,10 +25,17 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddTransient<IEventRepository, EventRepository>();
 builder.Services.AddTransient<IScheduleRepository, ScheduleRepository>();
 builder.Services.AddTransient<ITicketForPurchaseRepository, TicketForPurchaseRepository>();
+builder.Services.AddTransient<IShoppingCartRepository, ShoppingCartRepository>();
+builder.Services.AddTransient<IOrderRepository, OrderRepository>();
+builder.Services.AddTransient<IPurchasedTicketRepository, PurchasedTicketRepository>();
+
+
 
 builder.Services.AddTransient<IEventService, EventService>();
 builder.Services.AddTransient<IScheduleService, ScheduleService>();
 builder.Services.AddTransient<ITicketForPurchaseService, TicketForPurchaseService>();
+builder.Services.AddTransient<IShoppingCartService, ShoppingCartService>();
+
 
 var app = builder.Build();
 
