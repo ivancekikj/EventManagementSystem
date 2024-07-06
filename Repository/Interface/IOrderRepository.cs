@@ -9,5 +9,7 @@ namespace Repository.Interface
 {
     public interface IOrderRepository : IRepository<Order>
     {
+        Order? GetById(Guid id);
+        List<Order> GetAllByUserId(string userId);
     }
 }

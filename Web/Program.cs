@@ -35,6 +35,7 @@ builder.Services.AddTransient<IEventService, EventService>();
 builder.Services.AddTransient<IScheduleService, ScheduleService>();
 builder.Services.AddTransient<ITicketForPurchaseService, TicketForPurchaseService>();
 builder.Services.AddTransient<IShoppingCartService, ShoppingCartService>();
+builder.Services.AddTransient<IOrderService, OrderService>();
 
 
 var app = builder.Build();

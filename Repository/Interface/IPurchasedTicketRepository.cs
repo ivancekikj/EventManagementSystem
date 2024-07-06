@@ -9,5 +9,6 @@ namespace Repository.Interface
 {
     public interface IPurchasedTicketRepository : IRepository<PurchasedTicket>
     {
+        PurchasedTicket? GetWithScheduleUserAndEvent(Guid id);
     }
 }
