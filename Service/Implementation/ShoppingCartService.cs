@@ -92,7 +92,8 @@ namespace Service.Implementation
                         OrderId = order.Id,
                         Quantity = x.Quantity,
                         Price = x.TicketForPurchase.Price,
-                        Discount = x.TicketForPurchase.Discount
+                        Discount = x.TicketForPurchase.Discount,
+                        ScheduleId = x.TicketForPurchase.ScheduleId
                     })
                     .ToList()
                     .ForEach(t => _purchasedTicketRepository.Insert(t));

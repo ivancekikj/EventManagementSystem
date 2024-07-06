@@ -1,0 +1,62 @@
+﻿@model Domain.Dto.OrderDto
+
+<p>Date Time Ordered: @Model.Order.DateTimeOrdered</p>
+<p>Number of items: @Model.Order.PurchasedTickets.Count</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Event
+            </th>
+            <th>
+                Schedule
+            </th>
+            <th>
+                Price
+            </th>
+            <th>
+                Quantity
+            </th>
+            <th>
+                Discount
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ticket in Model.Order.PurchasedTickets)
+        {
+            <tr>
+                <td>
+                    @ticket.Schedule.Event.Name
+                </td>
+                <td>
+                    @ticket.Schedule.StartTime - @ticket.Schedule.EndTime
+                </td>
+                <td>
+                    @ticket.Price
+                </td>
+                <td>
+                    @ticket.Quantity
+                </td>
+                <td>
+                    @ticket.Discount
+                </td>
+                <td>
+                    <a asp-action="ExportInvoice" asp-route-purchasedTicketId="@ticket.Id" class="btn btn-info">Create Invoice</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th>Total price:</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>$@Model.TotalPrice</th>
+        </tr>
+    </tfoot>
+</table>

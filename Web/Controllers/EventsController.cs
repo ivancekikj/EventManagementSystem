@@ -20,6 +20,30 @@ namespace Web.Controllers
             _eventService = eventService;
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public IActionResult Import()
+        {
+            return View();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public IActionResult Import(IFormFile file)
+        {
+            string pathToUpload = $"{Directory.GetCurrentDirectory()}\\files\\{file.FileName}";
+
+            using (FileStream fileStream = System.IO.File.Create(pathToUpload))
+            {
+                file.CopyTo(fileStream);
+                fileStream.Flush();
+            }
+
+            _eventService.ImportEvents(file.FileName);
+
+            return RedirectToAction("Index");
+        }
+
 
         // GET: Events
         public IActionResult Index()

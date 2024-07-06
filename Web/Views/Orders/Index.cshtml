@@ -1,0 +1,37 @@
+﻿@model List<Domain.Models.Order>
+
+
+<div class="container">
+    <div class="row m-5">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Date Time Ordered
+                    </th>
+                    <th>
+                        Number of products
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @item.DateTimeOrdered
+                        </td>
+
+                        <td>
+                            @item.PurchasedTickets.Count
+                        </td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">View Order</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

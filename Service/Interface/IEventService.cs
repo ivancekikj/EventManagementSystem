@@ -14,5 +14,6 @@ namespace Service.Interface
         void Create(Event e);
         void Update(Event e);
         void DeleteById(Guid id);
+        void ImportEvents(string fileName);
     }
 }

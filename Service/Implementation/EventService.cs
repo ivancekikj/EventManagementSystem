@@ -1,5 +1,8 @@
-﻿using Domain.Models;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Domain.Models;
+using ExcelDataReader;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Org.BouncyCastle.Asn1.Crmf;
 using Repository.Interface;
 using Service.Interface;
 using System;
@@ -39,6 +42,29 @@ namespace Service.Implementation
         public Event GetById(Guid? id)
         {
             return _eventRepository.Get(id);
+        }
+
+        public void ImportEvents(string fileName)
+        {
+            string filePath = $"{Directory.GetCurrentDirectory()}\\files\\{fileName}";
+
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+            using (var stream = System.IO.File.Open(filePath, FileMode.Open, FileAccess.Read))
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    while (reader.Read())
+                    {
+                        Create(new()
+                        {
+                            Name = reader.GetValue(0).ToString(),
+                            Location = reader.GetValue(1).ToString(),
+                            Description = reader.GetValue(1).ToString()
+                        });
+                    }
+                }
+            }
         }
 
         public void Update(Event e)
