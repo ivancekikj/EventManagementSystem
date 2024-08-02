@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Schedules</h1>
 
 @if (User.IsInRole("Admin"))
 {
@@ -37,7 +37,7 @@
                 @Html.DisplayFor(modelItem => item.EndTime)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Event.Description)
+                @Html.DisplayFor(modelItem => item.Event.Name)
             </td>
             <td>
                     @if (User.IsInRole("Admin"))

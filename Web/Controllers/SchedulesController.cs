@@ -51,7 +51,7 @@ namespace Web.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
-            ViewData["EventId"] = new SelectList(_eventService.GetAll(), "Id", "Description");
+            ViewData["EventId"] = new SelectList(_eventService.GetAll(), "Id", "Name");
             return View();
         }
 
@@ -68,7 +68,7 @@ namespace Web.Controllers
                 _scheduleService.Create(schedule);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EventId"] = new SelectList(_eventService.GetAll(), "Id", "Description", schedule.EventId);
+            ViewData["EventId"] = new SelectList(_eventService.GetAll(), "Id", "Name", schedule.EventId);
             return View(schedule);
         }
 
@@ -86,7 +86,7 @@ namespace Web.Controllers
             {
                 return NotFound();
             }
-            ViewData["EventId"] = new SelectList(_eventService.GetAll(), "Id", "Description", schedule.EventId);
+            ViewData["EventId"] = new SelectList(_eventService.GetAll(), "Id", "Name", schedule.EventId);
             return View(schedule);
         }
 
@@ -122,7 +122,7 @@ namespace Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EventId"] = new SelectList(_eventService.GetAll(), "Id", "Description", schedule.EventId);
+            ViewData["EventId"] = new SelectList(_eventService.GetAll(), "Id", "Name", schedule.EventId);
             return View(schedule);
         }
 

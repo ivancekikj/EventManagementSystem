@@ -17,12 +17,14 @@ namespace Repository.Implementation
 
         public IEnumerable<TicketForPurchase> GetAllWithSchedule()
         {
-            return entities.Include(t => t.Schedule);
+            return entities.Include(t => t.Schedule)
+                .Include(t => t.Schedule.Event);
         }
 
         public TicketForPurchase GetWithSchedule(Guid? id)
         {
             return entities.Include(t => t.Schedule)
+                .Include(t => t.Schedule.Event)
                 .SingleOrDefault(t => t.Id == id); ;
         }
     }

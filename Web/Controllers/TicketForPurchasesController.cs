@@ -81,11 +81,21 @@ namespace Web.Controllers
             return View(ticketForPurchase);
         }
 
+        private List<SelectListItem> CreateList()
+        {
+            return _scheduleService.GetAll()
+                .Select(s => new SelectListItem { 
+                    Text = $"{s.Event.Name} [{s.StartTime} - {s.EndTime}]", 
+                    Value = s.Id.ToString() 
+                })
+                .ToList();
+        }
+
         // GET: TicketForPurchases/Create
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
-            ViewData["ScheduleId"] = new SelectList(_scheduleService.GetAll(), "Id", "Id");
+            ViewData["ScheduleId"] = CreateList();
             return View();
         }
 
@@ -102,7 +112,7 @@ namespace Web.Controllers
                 _ticketPurchaseService.Create(ticketForPurchase);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ScheduleId"] = new SelectList(_scheduleService.GetAll(), "Id", "Id", ticketForPurchase.ScheduleId);
+            ViewData["ScheduleId"] = CreateList();
             return View(ticketForPurchase);
         }
 
@@ -120,7 +130,7 @@ namespace Web.Controllers
             {
                 return NotFound();
             }
-            ViewData["ScheduleId"] = new SelectList(_scheduleService.GetAll(), "Id", "Id", ticketForPurchase.ScheduleId);
+            ViewData["ScheduleId"] = CreateList();
             return View(ticketForPurchase);
         }
 
@@ -156,7 +166,7 @@ namespace Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ScheduleId"] = new SelectList(_scheduleService.GetAll(), "Id", "Id", ticketForPurchase.ScheduleId);
+            ViewData["ScheduleId"] = CreateList();
             return View(ticketForPurchase);
         }
 
