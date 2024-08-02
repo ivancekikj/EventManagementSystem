@@ -26,6 +26,14 @@ namespace Web.Controllers
         }
 
         [Authorize(Roles = "User")]
+        public ActionResult Empty()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            _shoppingCartService.EmptyShoppongCart(userId);
+            return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = "User")]
         [HttpPost]
         public IActionResult DeleteFromShoppingCart(Guid id)
         {

@@ -10,8 +10,11 @@
 
 @if(Model.Products.Count > 0)
 {
-    <form asp-action="Order" method="post">
+    <form asp-action="Order" method="post" class="d-inline-block">
         <button class="btn btn-success">Order</button>
+    </form>
+    <form asp-action="Empty" method="post" class="d-inline-block">
+        <button class="btn btn-success">Empty Cart</button>
     </form>
 }
 

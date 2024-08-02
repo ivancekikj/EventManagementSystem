@@ -52,6 +52,14 @@ namespace Service.Implementation
             return false;
         }
 
+        public bool EmptyShoppongCart(string userId)
+        {
+            var userShoppingCart = _cartRepository.GetByUserId(userId);
+            userShoppingCart.TicketInCarts.Clear();
+            _cartRepository.Update(userShoppingCart);
+            return true;
+        }
+
         public ShoppingCartDto GetShoppingCartInfo(string userId)
         {
             var userShoppingCart = _cartRepository.GetByUserId(userId);
