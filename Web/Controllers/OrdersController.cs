@@ -1,5 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Domain.Dto;
+using Domain.Exceptions;
 using Domain.Models;
 using GemBox.Document;
 using Microsoft.AspNetCore.Authorization;
@@ -22,15 +24,18 @@ namespace Web.Controllers
         }
 
         // GET: OrdersController
-        [Authorize(Roles = "User")]
+        [Authorize]
         public ActionResult Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return View(_orderService.GetAllOrdersOwnedByUser(userId));
+            List<Order> orders = User.IsInRole("User")
+                ? _orderService.GetAllOrdersOwnedByUser(userId)
+                : _orderService.GetAll();
+            return View(orders);
         }
 
         // GET: OrdersController/Details/5
-        [Authorize(Roles = "User")]
+        [Authorize]
         public ActionResult Details(Guid? id)
         {
             if (id == null)
@@ -42,29 +47,21 @@ namespace Web.Controllers
             try
             {
                 dto = _orderService.GetOrderById((Guid)id, userId);
-            } catch (Exception ex)
+            } catch (AccessDeniedException ex)
             {
                 return View("AccessDenied");
             }
             return View(dto);
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "Admin")]
         public ActionResult ExportInvoice(Guid? purchasedTicketId)
         {
             if (purchasedTicketId == null)
             {
                 return NotFound();
             }
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            DocumentModel document;
-            try
-            {
-                document = _orderService.CreateInvoice((Guid)purchasedTicketId, userId);
-            } catch (Exception ex)
-            {
-                return View("AccessDenied");
-            }
+            DocumentModel document = _orderService.CreateInvoice((Guid)purchasedTicketId);
             var stream = new MemoryStream();
             document.Save(stream, new PdfSaveOptions());
             return File(stream.ToArray(), new PdfSaveOptions().ContentType, "Invoice.pdf");

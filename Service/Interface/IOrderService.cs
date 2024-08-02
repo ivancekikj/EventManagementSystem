@@ -11,8 +11,9 @@ namespace Service.Interface
 {
     public interface IOrderService
     {
+        List<Order> GetAll();
         List<Order> GetAllOrdersOwnedByUser(string userId);
         OrderDto GetOrderById(Guid id, string userId);
-        DocumentModel CreateInvoice(Guid purchasedTicketId, string userId);
+        DocumentModel CreateInvoice(Guid purchasedTicketId);
     }
 }

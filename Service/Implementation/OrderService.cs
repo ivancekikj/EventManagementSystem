@@ -1,7 +1,9 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
 using Domain.Dto;
+using Domain.Exceptions;
 using Domain.Models;
 using GemBox.Document;
+using Microsoft.AspNetCore.Identity;
 using Repository.Interface;
 using Service.Interface;
 using System;
@@ -16,22 +18,21 @@ namespace Service.Implementation
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IPurchasedTicketRepository _purchasedTicketRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public OrderService(IOrderRepository orderRepository, 
-            IPurchasedTicketRepository purchasedTicketRepository)
+            IPurchasedTicketRepository purchasedTicketRepository, 
+            UserManager<ApplicationUser> userManager)
         {
             _orderRepository = orderRepository;
             _purchasedTicketRepository = purchasedTicketRepository;
+            _userManager = userManager;
             ComponentInfo.SetLicense("FREE-LIMITED-KEY");
         }
 
-        public DocumentModel CreateInvoice(Guid purchasedTicketId, string userId)
+        public DocumentModel CreateInvoice(Guid purchasedTicketId)
         {
             PurchasedTicket? ticket = _purchasedTicketRepository.GetWithScheduleUserAndEvent(purchasedTicketId);
-            if (!ticket.Order.ApplicationUserId.Equals(userId))
-            {
-                throw new Exception($"Ticket {purchasedTicketId} doesn't belong to user {userId}");
-            }
 
             var templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Invoice.docx");
             var document = DocumentModel.Load(templatePath);
@@ -48,6 +49,11 @@ namespace Service.Implementation
             return document;
         }
 
+        public List<Order> GetAll()
+        {
+            return _orderRepository.GetAllWithExtraData();
+        }
+
         public List<Order> GetAllOrdersOwnedByUser(string userId)
         {
             return _orderRepository.GetAllByUserId(userId);
@@ -56,9 +62,11 @@ namespace Service.Implementation
         public OrderDto GetOrderById(Guid id, string userId)
         {
             Order? order = _orderRepository.GetById(id);
-            if (!order.ApplicationUserId.Equals(userId))
+            if (!(_userManager.IsInRoleAsync(order.ApplicationUser, "Admin").Result
+                || _userManager.IsInRoleAsync(order.ApplicationUser,"User").Result 
+                && order.ApplicationUserId.Equals(userId)))
             {
-                throw new Exception($"Order {id} doesn't belong to user {userId}");
+                throw new AccessDeniedException();
             }
             float? totalPrice = order.PurchasedTickets
                 .Select(x => (x.Price * x.Quantity) * (1 - x.Discount))
