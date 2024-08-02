@@ -60,7 +60,7 @@ namespace Service.Implementation
                         {
                             Name = reader.GetValue(0).ToString(),
                             Location = reader.GetValue(1).ToString(),
-                            Description = reader.GetValue(1).ToString()
+                            Description = reader.GetValue(2).ToString()
                         });
                     }
                 }
