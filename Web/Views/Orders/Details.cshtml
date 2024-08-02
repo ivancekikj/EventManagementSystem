@@ -24,10 +24,6 @@
             <th>
                 Discount
             </th>
-            @if (User.IsInRole("Admin"))
-            {
-                <th></th>
-            }
         </tr>
     </thead>
     <tbody>
@@ -49,19 +45,12 @@
                 <td>
                     @ticket.Discount
                 </td>
-                @if (User.IsInRole("Admin"))
-                {
-                    <td>
-                        <a asp-action="ExportInvoice" asp-route-purchasedTicketId="@ticket.Id" class="btn btn-info">Create Invoice</a>
-                    </td>
-                }
             </tr>
         }
     </tbody>
     <tfoot>
         <tr>
             <th>Total price:</th>
-            <th></th>
             <th></th>
             <th></th>
             <th></th>

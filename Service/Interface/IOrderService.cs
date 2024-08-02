@@ -14,6 +14,6 @@ namespace Service.Interface
         List<Order> GetAll();
         List<Order> GetAllOrdersOwnedByUser(string userId);
         OrderDto GetOrderById(Guid id, string userId);
-        DocumentModel CreateInvoice(Guid purchasedTicketId);
+        DocumentModel CreateInvoice(Guid orderId);
     }
 }

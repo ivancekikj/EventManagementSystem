@@ -55,16 +55,16 @@ namespace Web.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public ActionResult ExportInvoice(Guid? purchasedTicketId)
+        public ActionResult ExportInvoice(Guid? orderId)
         {
-            if (purchasedTicketId == null)
+            if (orderId == null)
             {
                 return NotFound();
             }
-            DocumentModel document = _orderService.CreateInvoice((Guid)purchasedTicketId);
+            DocumentModel document = _orderService.CreateInvoice((Guid)orderId);
             var stream = new MemoryStream();
             document.Save(stream, new PdfSaveOptions());
-            return File(stream.ToArray(), new PdfSaveOptions().ContentType, "Invoice.pdf");
+            return File(stream.ToArray(), new PdfSaveOptions().ContentType, $"Order_{orderId}_Invoice.pdf");
         }
     }
 }

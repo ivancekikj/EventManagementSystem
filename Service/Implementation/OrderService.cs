@@ -30,21 +30,29 @@ namespace Service.Implementation
             ComponentInfo.SetLicense("FREE-LIMITED-KEY");
         }
 
-        public DocumentModel CreateInvoice(Guid purchasedTicketId)
+        public DocumentModel CreateInvoice(Guid orderId)
         {
-            PurchasedTicket? ticket = _purchasedTicketRepository.GetWithScheduleUserAndEvent(purchasedTicketId);
+            Order? order = _orderRepository.GetById(orderId);
 
             var templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Invoice.docx");
             var document = DocumentModel.Load(templatePath);
 
-            document.Content.Replace("{{TicketId}}", ticket.Id.ToString());
-            document.Content.Replace("{{Username}}", ticket.Order.ApplicationUser.UserName);
-            document.Content.Replace("{{OrderDateTime}}", ticket.Order.DateTimeOrdered.ToString());
-            document.Content.Replace("{{Quantity}}", ticket.Quantity.ToString());
-            document.Content.Replace("{{Price}}", "$" + ticket.Price.ToString());
-            document.Content.Replace("{{Discount}}", ticket.Discount.ToString());
-            float? value = (1 - ticket.Discount) * (ticket.Price * ticket.Quantity);
-            document.Content.Replace("{{TotalPrice}}", "$" + value.ToString());
+            document.Content.Replace("{{OrderId}}", order.Id.ToString());
+            document.Content.Replace("{{Username}}", order.ApplicationUser.UserName);
+            document.Content.Replace("{{DateTimeOrdered}}", order.DateTimeOrdered.ToString());
+            float totalPrice = 0.0f;
+            StringBuilder sb = new StringBuilder();
+            PurchasedTicket pt;
+            for (int i = 0; i < order.PurchasedTickets.Count; i++)
+            {
+                pt = order.PurchasedTickets.ElementAt(i);
+                sb.Append($"Ticket with quantity {pt.Quantity}, price ${pt.Price} and discount {pt.Discount} for event '{pt.Schedule.Event.Name}' from {pt.Schedule.StartTime} to {pt.Schedule.EndTime}.");
+                totalPrice += (float)((pt.Price * pt.Quantity) * (1 - pt.Discount));
+                if (i < order.PurchasedTickets.Count - 1)
+                    sb.Append("\n");
+            }
+            document.Content.Replace("{{PurchasedTickets}}", sb.ToString());
+            document.Content.Replace("{{TotalPrice}}", "$" + totalPrice.ToString());
 
             return document;
         }
@@ -62,9 +70,9 @@ namespace Service.Implementation
         public OrderDto GetOrderById(Guid id, string userId)
         {
             Order? order = _orderRepository.GetById(id);
-            if (!(_userManager.IsInRoleAsync(order.ApplicationUser, "Admin").Result
-                || _userManager.IsInRoleAsync(order.ApplicationUser,"User").Result 
-                && order.ApplicationUserId.Equals(userId)))
+            ApplicationUser admin = _userManager.FindByIdAsync(userId).Result;
+            if (!(_userManager.IsInRoleAsync(admin, "Admin").Result
+                || order.ApplicationUserId.Equals(userId)))
             {
                 throw new AccessDeniedException();
             }
