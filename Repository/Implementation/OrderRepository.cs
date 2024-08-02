@@ -25,6 +25,15 @@ namespace Repository.Implementation
                 .ToList();
         }
 
+        public List<Order> GetAllWithExtraData()
+        {
+            return entities.Include(o => o.ApplicationUser)
+                .Include(o => o.PurchasedTickets)
+                .Include("PurchasedTickets.Schedule")
+                .Include("PurchasedTickets.Schedule.Event")
+                .ToList();
+        }
+
         public Order? GetById(Guid id)
         {
             return entities.Include(o => o.ApplicationUser)

@@ -14,5 +14,6 @@ namespace Service.Interface
         bool DeleteTicketFromShoppingCart(string userId, Guid ticketId);
         bool Order(string userId);
         bool AddToShoppingConfirmed(TicketInCart model, string userId);
+        bool EmptyShoppongCart(string userId);
     }
 }

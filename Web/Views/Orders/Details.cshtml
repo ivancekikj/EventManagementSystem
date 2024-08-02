@@ -1,5 +1,8 @@
 ﻿@model Domain.Dto.OrderDto
-
+@if (User.IsInRole("Admin"))
+{
+    <p>Username: @Model.Order.ApplicationUser.UserName</p>
+}
 <p>Date Time Ordered: @Model.Order.DateTimeOrdered</p>
 <p>Number of items: @Model.Order.PurchasedTickets.Count</p>
 
@@ -21,7 +24,6 @@
             <th>
                 Discount
             </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -43,16 +45,12 @@
                 <td>
                     @ticket.Discount
                 </td>
-                <td>
-                    <a asp-action="ExportInvoice" asp-route-purchasedTicketId="@ticket.Id" class="btn btn-info">Create Invoice</a>
-                </td>
             </tr>
         }
     </tbody>
     <tfoot>
         <tr>
             <th>Total price:</th>
-            <th></th>
             <th></th>
             <th></th>
             <th></th>
