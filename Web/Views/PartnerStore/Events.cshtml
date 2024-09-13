@@ -1,0 +1,39 @@
+﻿@model List<Domain.Models.PartnerStoreEvent>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Partner Store Events</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Event Name
+            </th>
+            <th>
+                Host Name
+            </th>
+            <th>
+                Option(s)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.EventName
+                </td>
+                <td>
+                    @item.HostName
+                </td>
+                <td>
+                    <a asp-action="EventDetails" asp-route-id="@item.Id">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
