@@ -1,0 +1,5 @@
+GET https://localhost:44346/api/PartnerStore/GetAllEvents
+
+###
+
+GET https://localhost:44346/api/PartnerStore/GetDetailsForEvent/7485393d-cad9-4c49-a6d5-00d82fc8e73b
