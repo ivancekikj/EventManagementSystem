@@ -14,10 +14,12 @@ namespace Web.Controllers
     public class EventsController : Controller
     {
         private readonly IEventService _eventService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public EventsController(IEventService eventService)
+        public EventsController(IEventService eventService, IWebHostEnvironment webHostEnvironment)
         {
             _eventService = eventService;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [Authorize(Roles = "Admin")]
@@ -31,7 +33,7 @@ namespace Web.Controllers
         [HttpPost]
         public IActionResult Import(IFormFile file)
         {
-            string pathToUpload = $"{Directory.GetCurrentDirectory()}\\files\\{file.FileName}";
+            string pathToUpload = $"{_webHostEnvironment.ContentRootPath}\\files\\{file.FileName}";
 
             using (FileStream fileStream = System.IO.File.Create(pathToUpload))
             {

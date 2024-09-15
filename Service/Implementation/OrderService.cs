@@ -30,11 +30,11 @@ namespace Service.Implementation
             ComponentInfo.SetLicense("FREE-LIMITED-KEY");
         }
 
-        public DocumentModel CreateInvoice(Guid orderId)
+        public DocumentModel CreateInvoice(Guid orderId, string contentRootPath)
         {
             Order? order = _orderRepository.GetById(orderId);
 
-            var templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Invoice.docx");
+            var templatePath = $"{contentRootPath}\\Invoice.docx";
             var document = DocumentModel.Load(templatePath);
 
             document.Content.Replace("{{OrderId}}", order.Id.ToString());

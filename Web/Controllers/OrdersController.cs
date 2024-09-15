@@ -17,10 +17,12 @@ namespace Web.Controllers
     public class OrdersController : Controller
     {
         private readonly IOrderService _orderService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public OrdersController(IOrderService orderService)
+        public OrdersController(IOrderService orderService, IWebHostEnvironment webHostEnvironment)
         {
             _orderService = orderService;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: OrdersController
@@ -61,7 +63,7 @@ namespace Web.Controllers
             {
                 return NotFound();
             }
-            DocumentModel document = _orderService.CreateInvoice((Guid)orderId);
+            DocumentModel document = _orderService.CreateInvoice((Guid)orderId, _webHostEnvironment.ContentRootPath);
             var stream = new MemoryStream();
             document.Save(stream, new PdfSaveOptions());
             return File(stream.ToArray(), new PdfSaveOptions().ContentType, $"Order_{orderId}_Invoice.pdf");

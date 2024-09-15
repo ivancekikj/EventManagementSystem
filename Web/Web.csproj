@@ -8,7 +8,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\tmp.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="files\tmp.txt" />
     <None Remove="files\users.xlsx" />
+    <None Remove="Invoice.docx" />
+    <None Remove="~%24nvoice.docx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="files\tmp.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Invoice.docx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
